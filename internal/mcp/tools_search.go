@@ -31,6 +31,7 @@ func (t *SearchTools) SearchRules(ctx context.Context, input SearchRulesInput) (
 	for _, rule := range rules {
 		agentRules = append(agentRules, RuleForAgent{
 			ID:               rule.ID,
+			Source:           rule.Source,
 			Category:         rule.Category,
 			Severity:         rule.Severity,
 			Title:            rule.Title,

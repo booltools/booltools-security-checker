@@ -67,7 +67,17 @@ func (s *SecurityCheckerServer) Close() error {
 func (s *SecurityCheckerServer) registerTools() {
 	gomcp.AddTool(s.mcpServer, &gomcp.Tool{
 		Name: "start_audit",
-		Description: `Initialize a security audit session. Provide project context (language, framework, platform, tools) to get relevant security rules filtered for your stack.
+		Description: `Initialize a security audit session. You MUST provide:
+- language: the primary language (go, python, javascript, java, etc.)
+- tools: array of ALL libraries/tools/runtimes the project uses (e.g. ["react", "express", "postgres", "redis", "docker", "nginx"]). Look at package.json, go.mod, requirements.txt, etc. to find these.
+- platform: cloud/infra if applicable (aws, gcp, azure, docker, kubernetes)
+- audit_type: one of:
+  "code" (default, ~875 rules) — application-level attack patterns (CAPEC), code weaknesses (CWE), and code-relevant MITRE techniques. Best for checking source code of web apps, APIs, and services.
+  "infrastructure" (~2200 rules) — OS-level, cloud, and network attack techniques (MITRE ATT&CK + CISA KEV). Best for checking server configs, Docker, K8s, cloud IAM.
+  "extended" (~8300 rules) — code patterns + nuclei product-specific templates.
+  "full" (~25000 rules) — all non-dependency rules.
+  "dependency" — checks vulnerable package versions only.
+  "all" — everything.
 
 IMPORTANT: After starting an audit, you MUST iterate through ALL rules using get_rules and report_results until every single rule has been checked. Do NOT skip rules or stop early. The audit is only complete when all rules have been reported.`,
 	}, s.handleStartAudit)

@@ -42,10 +42,14 @@ func (rd *RulesDatabase) SearchRules(query string, limit int) ([]normalizer.Secu
 
 func (rd *RulesDatabase) GetCategoryCounts(filter normalizer.QueryFilter) (map[string]int, error) {
 	rules, err := rd.db.QueryRules(normalizer.QueryFilter{
-		Languages: filter.Languages,
-		Severity:  filter.Severity,
-		AppliesTo: filter.AppliesTo,
-		Limit:     10000,
+		Languages:               filter.Languages,
+		Sources:                 filter.Sources,
+		Severity:                filter.Severity,
+		MinSeverity:             filter.MinSeverity,
+		AppliesTo:               filter.AppliesTo,
+		ExcludeCategories:       filter.ExcludeCategories,
+		ExcludeSourceCategories: filter.ExcludeSourceCategories,
+		Limit:                   10000,
 	})
 	if err != nil {
 		return nil, err

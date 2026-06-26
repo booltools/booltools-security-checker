@@ -123,16 +123,30 @@ func (d *Database) CountBySource() (map[string]int, error) {
 }
 
 type QueryFilter struct {
-	Languages  []string
-	Frameworks []string
-	Platforms  []string
-	AppliesTo  string
-	Severity   string
-	Category   string
-	IsKEV      *bool
-	MinCVSS    float64
-	Limit      int
-	Offset     int
+	Languages         []string
+	Frameworks        []string
+	Platforms         []string
+	Sources           []string
+	AppliesTo         string
+	Severity          string
+	MinSeverity       string
+	Category          string
+	ExcludeCategories []string
+	ExcludeSourceCategories map[string][]string // source -> categories to exclude from that source
+	IsKEV             *bool
+	MinCVSS           float64
+	Limit             int
+	Offset            int
+}
+
+func severitiesAtOrAbove(minSeverity string) []string {
+	order := []string{"critical", "high", "medium", "low", "info"}
+	for i, severity := range order {
+		if severity == minSeverity {
+			return order[:i+1]
+		}
+	}
+	return order
 }
 
 func (d *Database) QueryRules(filter QueryFilter) ([]SecurityRule, error) {
@@ -143,9 +157,36 @@ func (d *Database) QueryRules(filter QueryFilter) ([]SecurityRule, error) {
 		query += " AND severity = ?"
 		args = append(args, filter.Severity)
 	}
+	if filter.MinSeverity != "" {
+		severities := severitiesAtOrAbove(filter.MinSeverity)
+		placeholders := make([]string, len(severities))
+		for i, sev := range severities {
+			placeholders[i] = "?"
+			args = append(args, sev)
+		}
+		query += " AND severity IN (" + strings.Join(placeholders, ",") + ")"
+	}
+	if len(filter.Sources) > 0 {
+		placeholders := make([]string, len(filter.Sources))
+		for i, src := range filter.Sources {
+			placeholders[i] = "?"
+			args = append(args, src)
+		}
+		query += " AND source IN (" + strings.Join(placeholders, ",") + ")"
+	}
 	if filter.Category != "" {
 		query += " AND category = ?"
 		args = append(args, filter.Category)
+	}
+	for _, excludedCategory := range filter.ExcludeCategories {
+		query += " AND category != ?"
+		args = append(args, excludedCategory)
+	}
+	for source, categories := range filter.ExcludeSourceCategories {
+		for _, category := range categories {
+			query += " AND NOT (source = ? AND category = ?)"
+			args = append(args, source, category)
+		}
 	}
 	if filter.AppliesTo != "" {
 		query += " AND (applies_to = ? OR applies_to = 'all')"
@@ -246,9 +287,36 @@ func (d *Database) CountFiltered(filter QueryFilter) (int, error) {
 		query += " AND severity = ?"
 		args = append(args, filter.Severity)
 	}
+	if filter.MinSeverity != "" {
+		severities := severitiesAtOrAbove(filter.MinSeverity)
+		placeholders := make([]string, len(severities))
+		for i, sev := range severities {
+			placeholders[i] = "?"
+			args = append(args, sev)
+		}
+		query += " AND severity IN (" + strings.Join(placeholders, ",") + ")"
+	}
+	if len(filter.Sources) > 0 {
+		placeholders := make([]string, len(filter.Sources))
+		for i, src := range filter.Sources {
+			placeholders[i] = "?"
+			args = append(args, src)
+		}
+		query += " AND source IN (" + strings.Join(placeholders, ",") + ")"
+	}
 	if filter.Category != "" {
 		query += " AND category = ?"
 		args = append(args, filter.Category)
+	}
+	for _, excludedCategory := range filter.ExcludeCategories {
+		query += " AND category != ?"
+		args = append(args, excludedCategory)
+	}
+	for source, categories := range filter.ExcludeSourceCategories {
+		for _, category := range categories {
+			query += " AND NOT (source = ? AND category = ?)"
+			args = append(args, source, category)
+		}
 	}
 	if filter.AppliesTo != "" {
 		query += " AND (applies_to = ? OR applies_to = 'all')"

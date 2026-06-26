@@ -21,8 +21,41 @@ func NewAuditTools(database *RulesDatabase, sessionManager *SessionManager) *Aud
 
 func (t *AuditTools) StartAudit(ctx context.Context, input StartAuditInput) (StartAuditOutput, error) {
 	filter := normalizer.QueryFilter{
-		AppliesTo: input.AppliesTo,
-		Severity:  mapMinSeverityToFilter(input.MinSeverity),
+		AppliesTo:   input.AppliesTo,
+		MinSeverity: mapMinSeverityToFilter(input.MinSeverity),
+	}
+
+	// Filter by audit type to control which rules are served.
+	// Default "code" mode only serves rules actually checkable by reading source code.
+	switch input.AuditType {
+	case "dependency":
+		// Only dependency/supply-chain version checks
+		filter.Category = "supply_chain"
+	case "extended":
+		// Code patterns + nuclei product-specific templates
+		filter.ExcludeCategories = []string{"supply_chain"}
+		filter.Sources = []string{"cwe", "capec", "mitre_attack", "nuclei"}
+	case "infrastructure":
+		// All MITRE techniques + CISA KEV (OS-level, cloud, infra attacks)
+		filter.ExcludeCategories = []string{"supply_chain"}
+		filter.Sources = []string{"mitre_attack", "cisa_kev"}
+	case "full":
+		// All code-level rules (includes exploitdb, nvd, nuclei)
+		filter.ExcludeCategories = []string{"supply_chain"}
+	case "all":
+		// Everything including supply_chain
+	default:
+		// "code" or empty (default) — only rules checkable by reading source code:
+		// - ALL CAPEC rules (application-level attack patterns: SQL injection, XSS, CSRF, etc.)
+		// - ALL CWE rules (code weaknesses: buffer overflow, improper validation, etc.)
+		// - Only code-relevant MITRE techniques (credential access, auth, injection, info exposure)
+		// Excludes: OS-level MITRE ("other" category: Rundll32, VNC, Screen Capture, etc.)
+		// Excludes: product-specific CISA KEV (Cisco, Ubiquiti, Oracle CVEs)
+		filter.ExcludeCategories = []string{"supply_chain"}
+		filter.Sources = []string{"cwe", "capec", "mitre_attack"}
+		filter.ExcludeSourceCategories = map[string][]string{
+			"mitre_attack": {"other"},
+		}
 	}
 
 	if input.Language != "" {
@@ -47,12 +80,13 @@ func (t *AuditTools) StartAudit(ctx context.Context, input StartAuditInput) (Sta
 
 	if totalRules == 0 {
 		return StartAuditOutput{
-			Message: "No rules found matching the specified criteria. Try broadening your filters.",
+			Categories: make(map[string]int),
+			Message:    "No rules found matching the specified criteria. Try broadening your filters.",
 		}, nil
 	}
 
 	categories, err := t.database.GetCategoryCounts(filter)
-	if err != nil {
+	if err != nil || categories == nil {
 		categories = make(map[string]int)
 	}
 
@@ -98,6 +132,7 @@ func (t *AuditTools) GetRules(ctx context.Context, input GetRulesInput) (GetRule
 	for _, rule := range rules {
 		agentRules = append(agentRules, RuleForAgent{
 			ID:               rule.ID,
+			Source:           rule.Source,
 			Category:         rule.Category,
 			Severity:         rule.Severity,
 			Title:            rule.Title,

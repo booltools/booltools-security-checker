@@ -5,6 +5,7 @@ type StartAuditInput struct {
 	Framework   string   `json:"framework,omitempty" jsonschema:"Framework used (e.g. express, django, spring, nextjs)"`
 	Platform    string   `json:"platform,omitempty" jsonschema:"Cloud/infrastructure platform (e.g. aws, gcp, azure, docker, kubernetes)"`
 	Tools       []string `json:"tools,omitempty" jsonschema:"Libraries and tools used in the project (e.g. react, node, webpack, prisma, redis, postgres, nginx)"`
+	AuditType   string   `json:"audit_type,omitempty" jsonschema:"Type of audit: code (default ~875 rules, application-level attack patterns checkable in source code), infrastructure (~2200 rules, OS/cloud/network attacks for server configs), extended (~8300 rules, code + nuclei templates), full (~25k all non-dependency), dependency (package version checks), all (everything)"`
 	AppliesTo   string   `json:"applies_to,omitempty" jsonschema:"Focus area: code, config, dependency, infrastructure, or all"`
 	MinSeverity string   `json:"min_severity,omitempty" jsonschema:"Minimum severity to include: critical, high, medium, low, info"`
 }
@@ -23,6 +24,7 @@ type GetRulesInput struct {
 
 type RuleForAgent struct {
 	ID               string   `json:"id"`
+	Source           string   `json:"source"`
 	Category         string   `json:"category"`
 	Severity         string   `json:"severity"`
 	Title            string   `json:"title"`
