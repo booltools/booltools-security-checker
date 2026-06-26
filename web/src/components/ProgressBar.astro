@@ -1,0 +1,62 @@
+---
+---
+
+<div class="progress-container" id="progress-container" style="display:none;">
+  <div class="progress-header">
+    <span class="progress-label" id="progress-label">Scanning...</span>
+    <span class="progress-percent" id="progress-percent">0%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+  </div>
+  <p class="progress-detail" id="progress-detail">Initializing audit session...</p>
+</div>
+
+<style>
+  .progress-container {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .progress-percent {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-detail {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+</style>

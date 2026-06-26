@@ -1,0 +1,118 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProgressBar from '../../components/ProgressBar.astro';
+import ScoreCard from '../../components/ScoreCard.astro';
+import AuditCategory from '../../components/AuditCategory.astro';
+
+const { id } = Astro.params;
+---
+
+<Layout title={`Security Audit Report — ${id}`} description="Security audit results with vulnerability findings and remediation instructions.">
+  <div class="report-header">
+    <h1>Security Audit Report</h1>
+    <div class="report-actions">
+      <a href={`/api/report/${id}/export/json`} class="export-btn">Download JSON</a>
+      <a href={`/api/report/${id}/export/csv`} class="export-btn">Export CSV</a>
+      <a href={`/api/report/${id}/export/md`} class="export-btn">Export Markdown</a>
+    </div>
+  </div>
+
+  <ProgressBar />
+  <ScoreCard />
+  <AuditCategory />
+</Layout>
+
+<script define:vars={{ sessionId: id }}>
+  async function loadReport() {
+    const progressContainer = document.getElementById('progress-container');
+    const scoreGrid = document.getElementById('score-grid');
+    const resultsSection = document.getElementById('results-section');
+    const resultsList = document.getElementById('results-list');
+
+    progressContainer.style.display = 'block';
+
+    try {
+      const response = await fetch(`/api/report/${sessionId}`);
+      const report = await response.json();
+
+      if (response.ok) {
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-percent').textContent = '100%';
+        document.getElementById('progress-label').textContent = 'Complete';
+        document.getElementById('progress-detail').textContent = `Checked ${report.checked} of ${report.total_rules} rules`;
+
+        setTimeout(() => {
+          progressContainer.style.display = 'none';
+          scoreGrid.style.display = 'grid';
+
+          document.getElementById('score-value').textContent = report.score || '--';
+          document.getElementById('passed-count').textContent = report.passed || 0;
+          document.getElementById('failed-count').textContent = report.failed || 0;
+          document.getElementById('total-count').textContent = report.checked || 0;
+
+          if (report.failed_rules && report.failed_rules.length > 0) {
+            resultsSection.style.display = 'block';
+            resultsList.innerHTML = report.failed_rules.map(rule => `
+              <div class="result-item severity-${rule.severity}">
+                <span class="result-badge badge-${rule.severity}">${rule.severity}</span>
+                <div class="result-content">
+                  <div class="result-title">${rule.title || rule.rule_id}</div>
+                  <div class="result-evidence">${rule.evidence || ''}</div>
+                  <div class="result-id">${rule.rule_id}</div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }, 500);
+      } else {
+        document.getElementById('progress-label').textContent = 'Error';
+        document.getElementById('progress-detail').textContent = report.error || 'Failed to load report';
+      }
+    } catch (err) {
+      document.getElementById('progress-label').textContent = 'Error';
+      document.getElementById('progress-detail').textContent = 'Failed to connect to server';
+    }
+  }
+
+  loadReport();
+</script>
+
+<style>
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .report-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .report-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .export-btn {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .export-btn:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    text-decoration: none;
+  }
+</style>

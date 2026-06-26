@@ -1,0 +1,113 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Getting Started — Security Checker" description="Install and run the Security Checker in under 5 minutes.">
+  <article class="docs-content">
+    <h1>Getting Started</h1>
+
+    <h2>Prerequisites</h2>
+    <ul>
+      <li><strong>Go</strong> 1.21+</li>
+      <li><strong>Node.js</strong> 20+</li>
+    </ul>
+
+    <h2>Install and Run</h2>
+    <pre><code>git clone https://github.com/booltools/booltools-security-checker.git
+cd booltools-security-checker
+
+# Install dependencies
+go mod tidy
+cd web && npm install && cd ..
+
+# Download and normalize security data
+make crawl
+make normalize
+
+# Terminal 1 — Backend (port 8787)
+make dev
+
+# Terminal 2 — Frontend (port 4321)
+make web-dev</code></pre>
+
+    <p>Open <strong>http://localhost:4321</strong> in your browser.</p>
+
+    <h2>Run with Docker</h2>
+    <pre><code>docker compose up --build</code></pre>
+
+    <h2>How It Works</h2>
+    <ol>
+      <li>Enter the path to a project folder</li>
+      <li>Select language, platform, and severity filters</li>
+      <li>Click <strong>Scan</strong> to start the audit</li>
+      <li>Review results grouped by category with severity indicators</li>
+      <li><strong>Export</strong> as CSV or Markdown</li>
+    </ol>
+
+    <h2>MCP Server (for AI Agents)</h2>
+    <p>The security checker includes an MCP server for AI agents to programmatically audit code:</p>
+    <pre><code>go run ./cmd/mcp-server</code></pre>
+    <p>Configure it in your AI agent's MCP settings to enable automated security scanning.</p>
+
+    <h2>Data Sources</h2>
+    <p>Rules are aggregated from the following authoritative security databases:</p>
+    <ul>
+      <li><a href="https://nvd.nist.gov/" target="_blank" rel="noopener"><strong>NVD</strong></a> — NIST National Vulnerability Database (CVEs with CVSS scores)</li>
+      <li><a href="https://cwe.mitre.org/" target="_blank" rel="noopener"><strong>CWE</strong></a> — Common Weakness Enumeration</li>
+      <li><a href="https://attack.mitre.org/" target="_blank" rel="noopener"><strong>MITRE ATT&CK</strong></a> — Adversary tactics, techniques, and procedures</li>
+      <li><a href="https://capec.mitre.org/" target="_blank" rel="noopener"><strong>CAPEC</strong></a> — Common Attack Pattern Enumeration</li>
+      <li><a href="https://github.com/projectdiscovery/nuclei-templates" target="_blank" rel="noopener"><strong>Nuclei Templates</strong></a> — ProjectDiscovery vulnerability detection</li>
+      <li><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener"><strong>CISA KEV</strong></a> — Known Exploited Vulnerabilities</li>
+      <li><a href="https://www.first.org/epss/" target="_blank" rel="noopener"><strong>EPSS</strong></a> — Exploit Prediction Scoring System</li>
+      <li><a href="https://www.exploit-db.com/" target="_blank" rel="noopener"><strong>Exploit-DB</strong></a> — Public exploit database</li>
+      <li><a href="https://github.com/advisories" target="_blank" rel="noopener"><strong>GitHub Advisory</strong></a> — GitHub Security Advisories (GHSA)</li>
+      <li><a href="https://osv.dev/" target="_blank" rel="noopener"><strong>OSV.dev</strong></a> — Open Source Vulnerabilities</li>
+    </ul>
+  </article>
+</Layout>
+
+<style>
+  .docs-content { max-width: 700px; }
+
+  .docs-content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .docs-content h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .docs-content p, .docs-content li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .docs-content ul, .docs-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content li { margin-bottom: 0.3rem; }
+
+  .docs-content pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  .docs-content code {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+</style>

@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FolderInput from '../components/FolderInput.astro';
+---
+
+<Layout title="Security Checker — Audit Any Project for Vulnerabilities" description="Open-source security validation checker. Scan repositories and cloud architectures against thousands of known vulnerabilities, CWEs, CVEs, and attack patterns.">
+  <FolderInput />
+
+  <section class="features-section">
+    <h2>What does the Security Checker scan for?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <h3>Injection Vulnerabilities</h3>
+        <p>SQL injection, command injection, XSS, path traversal, and code injection patterns from CWE and Nuclei templates.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Hardcoded Secrets</h3>
+        <p>API keys, passwords, AWS credentials, tokens, and other secrets embedded directly in source code.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Known CVEs &amp; Exploits</h3>
+        <p>Cross-references your dependencies against NVD, EPSS scores, CISA KEV, and public exploit databases.</p>
+      </div>
+      <div class="feature-card">
+        <h3>MITRE ATT&CK Patterns</h3>
+        <p>Checks for techniques used by adversaries — privilege escalation, lateral movement, persistence, and defense evasion.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Container &amp; Cloud Security</h3>
+        <p>Docker misconfigurations, running as root, exposed debug ports, missing health checks, and cloud IAM issues.</p>
+      </div>
+      <div class="feature-card">
+        <h3>MCP for AI Agents</h3>
+        <p>Built-in Model Context Protocol server so AI agents can programmatically audit and fix security issues.</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .features-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .features-section h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    text-align: center;
+    letter-spacing: -0.02em;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    transition: border-color 0.15s;
+  }
+
+  .feature-card:hover { border-color: var(--accent); }
+
+  .feature-card h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+</style>

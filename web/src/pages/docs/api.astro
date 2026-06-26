@@ -1,0 +1,125 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="API Reference — Security Checker" description="REST API endpoints for the Security Checker.">
+  <article class="docs-content">
+    <h1>API Reference</h1>
+
+    <p>The Security Checker API runs on port <code>8787</code> by default.</p>
+
+    <h2>Endpoints</h2>
+
+    <table>
+      <thead>
+        <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>POST</code></td><td><code>/api/audit</code></td><td>Start a new security audit</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/audit/:id/progress</code></td><td>SSE progress stream</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/report/:id</code></td><td>Full audit report</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/report/:id/export/csv</code></td><td>Export as CSV</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/report/:id/export/md</code></td><td>Export as Markdown</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/rules?q=query</code></td><td>Search security rules</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/rules/detail?id=rule_id</code></td><td>Get rule details</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/health</code></td><td>Health check</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Start an Audit</h2>
+    <pre><code>curl -X POST http://localhost:8787/api/audit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "folder_path": "/path/to/project",
+    "language": "go",
+    "platform": "docker",
+    "min_severity": "high"
+  }'</code></pre>
+
+    <h3>Response</h3>
+    <pre><code>{
+  "session_id": "abc123...",
+  "total_rules": 918,
+  "categories": {
+    "remote_code_execution": 40,
+    "privilege_escalation": 101,
+    "authentication_failure": 77
+  },
+  "message": "Audit session created with 918 security rules to check."
+}</code></pre>
+
+    <h2>Get Report</h2>
+    <pre><code>curl http://localhost:8787/api/report/abc123</code></pre>
+
+    <h2>Search Rules</h2>
+    <pre><code>curl "http://localhost:8787/api/rules?q=SQL+injection"</code></pre>
+  </article>
+</Layout>
+
+<style>
+  .docs-content { max-width: 700px; }
+
+  .docs-content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .docs-content h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .docs-content h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .docs-content p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .docs-content pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+
+  .docs-content code {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin: 1rem 0;
+  }
+
+  th, td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface);
+  }
+
+  td { color: var(--text-secondary); }
+  td code { background: var(--surface-2); padding: 0.1rem 0.3rem; border-radius: 3px; }
+</style>

@@ -1,0 +1,19 @@
+services:
+  security-checker:
+    build: .
+    container_name: booltools-security-checker
+    ports:
+      - "8787:8787"
+    volumes:
+      - ./security_rules.db:/app/data/security_rules.db:ro
+    environment:
+      - PORT=8787
+      - DB_PATH=/app/data/security_rules.db
+      - ALLOWED_ORIGINS=*
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8787/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

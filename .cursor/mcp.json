@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "booltoolsSecurityChecker": {
+      "url": "http://localhost:8788/mcp"
+    }
+  }
+}

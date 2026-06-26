@@ -1,0 +1,78 @@
+---
+---
+
+<section class="results-section" id="results-section" style="display:none;">
+  <h2>Audit Results</h2>
+  <div id="results-list" class="results-list"></div>
+</section>
+
+<style>
+  .results-section { margin-top: 1.5rem; }
+  .results-section h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+</style>
+
+<style is:global>
+  .result-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .result-item.severity-critical { border-left: 3px solid var(--red); }
+  .result-item.severity-high { border-left: 3px solid var(--orange); }
+  .result-item.severity-medium { border-left: 3px solid var(--yellow); }
+  .result-item.severity-low { border-left: 3px solid var(--blue); }
+
+  .result-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .badge-critical { background: var(--red-bg); color: var(--red); }
+  .badge-high { background: rgba(249, 115, 22, 0.1); color: var(--orange); }
+  .badge-medium { background: var(--yellow-bg); color: var(--yellow); }
+  .badge-low { background: var(--blue-bg); color: var(--blue); }
+
+  .result-content { flex: 1; min-width: 0; }
+
+  .result-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .result-evidence {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .result-id {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    margin-top: 0.2rem;
+  }
+</style>

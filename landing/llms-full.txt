@@ -1,0 +1,73 @@
+# Booltools Security Checker — Full Documentation
+
+> Open-source security validation checker for software applications
+
+## Overview
+
+Booltools Security Checker is a Go-based security auditing tool that normalizes vulnerability data from 10+ sources into a unified SQLite database and provides multiple interfaces for auditing code.
+
+## Architecture
+
+- **Data Pipeline**: Crawler downloads raw data, Normalizer transforms it into a common SecurityRule schema stored in SQLite
+- **API Server**: Go HTTP server with Chi router, exposes REST API with SSE streaming
+- **MCP Server**: Model Context Protocol server for AI agent integration
+- **Web Frontend**: Astro SSR application with dark theme UI
+
+## Data Sources
+
+1. **NVD** — NIST National Vulnerability Database (CVEs with CVSS scores)
+2. **CWE** — Common Weakness Enumeration (software weakness patterns)
+3. **MITRE ATT&CK** — Adversary tactics, techniques, and procedures
+4. **CAPEC** — Common Attack Pattern Enumeration and Classification
+5. **Nuclei** — ProjectDiscovery vulnerability detection templates
+6. **CISA KEV** — Known Exploited Vulnerabilities catalog
+7. **EPSS** — Exploit Prediction Scoring System
+8. **Exploit-DB** — Public exploit database
+9. **GitHub Advisory** — GitHub Security Advisories (GHSA)
+10. **OSV.dev** — Open Source Vulnerabilities (Go, npm, PyPI, etc.)
+
+## MCP Tools
+
+### start_audit
+Initialize a security audit session with project context (language, framework, platform).
+
+### get_rules
+Fetch batches of security rules to check against the project.
+
+### report_results
+Report pass/fail/skipped status for each rule with evidence.
+
+### get_report
+Get the final audit summary with score, category breakdown, and failed rules.
+
+### search_rules
+Search for specific vulnerabilities by keyword (SQL injection, XSS, etc.).
+
+### get_rule_detail
+Get full details for a specific rule including references and remediation.
+
+## API Endpoints
+
+- POST /api/audit — Start a new security audit
+- GET /api/audit/:id/progress — SSE progress stream
+- GET /api/report/:id — Full audit report
+- GET /api/report/:id/export/csv — Export as CSV
+- GET /api/report/:id/export/md — Export as Markdown
+- GET /api/rules?q=query — Search security rules
+- GET /api/rules/detail?id=rule_id — Get rule details
+- GET /api/health — Health check
+
+## Quick Start
+
+```bash
+git clone https://github.com/booltools/booltools-security-checker.git
+cd booltools-security-checker
+go mod tidy && cd web && npm install && cd ..
+make crawl && make normalize
+make dev        # Backend on :8787
+make web-dev    # Frontend on :4321
+```
+
+## License
+
+MIT License — https://github.com/booltools/booltools-security-checker/blob/master/LICENSE

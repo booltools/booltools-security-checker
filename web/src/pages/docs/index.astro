@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Documentation — Security Checker" description="Getting started guide, API reference, and MCP server documentation for the Security Checker.">
+  <h1>Documentation</h1>
+
+  <div class="docs-grid">
+    <a href="/docs/getting-started" class="doc-card">
+      <h3>Getting Started</h3>
+      <p>Install, configure, and run your first security audit in under 5 minutes.</p>
+    </a>
+
+    <a href="/docs/api" class="doc-card">
+      <h3>API Reference</h3>
+      <p>REST API endpoints for starting audits, streaming progress, and exporting reports.</p>
+    </a>
+
+    <a href="https://github.com/booltools/booltools-security-checker#architecture" class="doc-card" target="_blank" rel="noopener">
+      <h3>Architecture</h3>
+      <p>Clean Architecture with DDD: API layer, MCP server, normalizer pipeline, and data sources.</p>
+    </a>
+
+    <a href="https://github.com/booltools/booltools-security-checker/blob/master/CONTRIBUTING.md" class="doc-card" target="_blank" rel="noopener">
+      <h3>Contributing</h3>
+      <p>How to add new security rules, parsers, and data sources to the project.</p>
+    </a>
+  </div>
+</Layout>
+
+<style>
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .doc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+
+  .doc-card:hover { border-color: var(--accent); text-decoration: none; }
+
+  .doc-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .doc-card p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+</style>

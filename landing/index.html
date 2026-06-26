@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booltools Security Checker — Open-Source Vulnerability Scanner</title>
+  <meta name="description" content="Audit any repository or cloud architecture against thousands of known vulnerabilities, CWEs, CVEs, MITRE ATT&CK patterns, and exploits. Free, open-source, built with Go." />
+  <link rel="canonical" href="https://booltools.github.io/booltools-security-checker/" />
+  <meta name="author" content="Booltools" />
+  <meta property="og:title" content="Booltools Security Checker — Open-Source Vulnerability Scanner" />
+  <meta property="og:description" content="Audit any repository against thousands of known vulnerabilities, CWEs, CVEs, and MITRE ATT&CK patterns. Free, open-source, built with Go." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://booltools.github.io/booltools-security-checker/" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="Booltools Security Checker" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@booltools" />
+  <meta name="twitter:title" content="Booltools Security Checker — Open-Source Vulnerability Scanner" />
+  <meta name="twitter:description" content="Audit any repository against thousands of known vulnerabilities. Free, open-source, built with Go." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 10 L85 30 V55 C85 75 70 90 50 95 C30 90 15 75 15 55 V30 Z' fill='%236366f1'/><path d='M45 55 L38 48 L34 52 L45 63 L66 42 L62 38 Z' fill='white'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Booltools Security Checker","url":"https://booltools.github.io/booltools-security-checker/","description":"Open-source security validation checker for software applications. Thousands of rules from NVD, CWE, MITRE ATT&CK, Nuclei, and more.","dateModified":"2026-06-25","author":{"@type":"Organization","name":"Booltools","url":"https://github.com/booltools"},"license":"https://opensource.org/licenses/MIT"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Booltools Security Checker","url":"https://github.com/booltools/booltools-security-checker","applicationCategory":"DeveloperApplication","operatingSystem":"Cross-platform","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Audit repositories and cloud architectures against thousands of known vulnerabilities."}</script>
+</head>
+<body>
+  <header class="header">
+    <nav class="nav container">
+      <a href="#" class="logo">
+        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <path d="M50 10 L85 30 V55 C85 75 70 90 50 95 C30 90 15 75 15 55 V30 Z" fill="currentColor" style="color:#6366f1"/>
+          <path d="M45 55 L38 48 L34 52 L45 63 L66 42 L62 38 Z" fill="white"/>
+        </svg>
+        <span class="logo-text">Booltools Security Checker</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#sources">Data Sources</a>
+        <a href="#mcp">MCP Server</a>
+        <a href="https://github.com/booltools/booltools-security-checker" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">Open Source &bull; MIT License</div>
+        <h1>Audit any project for<br /><span class="gradient-text">security vulnerabilities</span></h1>
+        <p class="hero-subtitle">
+          Thousands of checks from <strong>NVD</strong>, <strong>CWE</strong>, <strong>MITRE ATT&CK</strong>,
+          <strong>Nuclei</strong>, <strong>EPSS</strong>, <strong>CISA KEV</strong>, and more.
+          Web UI, REST API, and <strong>MCP server</strong> for AI agents.
+        </p>
+        <div class="hero-actions">
+          <a href="https://github.com/booltools/booltools-security-checker#quick-start" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Get Started</a>
+          <a href="https://github.com/booltools/booltools-security-checker" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-title">Security Coverage</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">&#x1f6e1;</div>
+            <h3>Injection Detection</h3>
+            <p>SQL injection, command injection, XSS, path traversal from CWE and Nuclei templates.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1f511;</div>
+            <h3>Secret Detection</h3>
+            <p>Hardcoded API keys, passwords, AWS credentials, and tokens in source code.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1f4cb;</div>
+            <h3>CVE &amp; Exploit Matching</h3>
+            <p>Cross-reference dependencies against NVD, EPSS scores, CISA KEV, and Exploit-DB.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x2694;</div>
+            <h3>MITRE ATT&CK</h3>
+            <p>Checks for adversary techniques: privilege escalation, persistence, and defense evasion.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1f433;</div>
+            <h3>Container Security</h3>
+            <p>Docker misconfigs, running as root, exposed ports, missing health checks.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">&#x1f916;</div>
+            <h3>MCP for AI Agents</h3>
+            <p>Model Context Protocol server for AI agents to audit and auto-fix security issues.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sources" id="sources">
+      <div class="container">
+        <h2 class="section-title">Data Sources</h2>
+        <div class="sources-grid">
+          <div class="source-item"><strong>NVD</strong><span>NIST National Vulnerability Database</span></div>
+          <div class="source-item"><strong>CWE</strong><span>Common Weakness Enumeration</span></div>
+          <div class="source-item"><strong>MITRE ATT&CK</strong><span>Adversary tactics &amp; techniques</span></div>
+          <div class="source-item"><strong>CAPEC</strong><span>Common Attack Pattern Enumeration</span></div>
+          <div class="source-item"><strong>Nuclei</strong><span>ProjectDiscovery vulnerability templates</span></div>
+          <div class="source-item"><strong>CISA KEV</strong><span>Known Exploited Vulnerabilities</span></div>
+          <div class="source-item"><strong>EPSS</strong><span>Exploit Prediction Scoring System</span></div>
+          <div class="source-item"><strong>Exploit-DB</strong><span>Public exploit database</span></div>
+          <div class="source-item"><strong>GitHub Advisory</strong><span>GitHub Security Advisories</span></div>
+          <div class="source-item"><strong>OSV.dev</strong><span>Open Source Vulnerabilities</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mcp-section" id="mcp">
+      <div class="container">
+        <h2 class="section-title">MCP Server for AI Agents</h2>
+        <p class="section-subtitle">Let your AI agent audit code using the Model Context Protocol. Start an audit, iterate through rules, report results &mdash; all programmatically.</p>
+        <div class="code-block">
+          <pre><code># Available MCP Tools:
+start_audit    - Begin a security audit session
+get_rules      - Get batches of rules to check
+report_results - Report pass/fail for each rule
+get_report     - Get the final audit summary
+search_rules   - Search for specific vulnerabilities
+get_rule_detail - Get full details for a rule</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Booltools &mdash; MIT License &mdash; <a href="privacy.html">Privacy Policy</a></p>
+    </div>
+  </footer>
+</body>
+</html>

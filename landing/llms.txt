@@ -1,0 +1,21 @@
+# Booltools Security Checker
+
+> Open-source security validation checker for software applications
+
+## Overview
+
+Booltools Security Checker audits repositories and cloud architectures against thousands of known vulnerabilities from NVD, CWE, MITRE ATT&CK, CAPEC, Nuclei, CISA KEV, EPSS, Exploit-DB, GitHub Advisory, and OSV.dev.
+
+## Features
+
+- Web UI for interactive audits
+- REST API for automation
+- MCP server for AI agents
+- Real-time SSE progress streaming
+- CSV and Markdown export
+- Docker deployment
+
+## Links
+
+- Source: https://github.com/booltools/booltools-security-checker
+- Documentation: https://booltools.github.io/booltools-security-checker/

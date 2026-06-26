@@ -1,0 +1,154 @@
+output_dir: "./data"
+concurrency: 4
+request_timeout: 120s
+retry_max_attempts: 3
+retry_base_delay: 2s
+
+sources:
+  nvd:
+    enabled: true
+    name: "NIST NVD"
+    description: "National Vulnerability Database - CVE records"
+    url: "https://services.nvd.nist.gov/rest/json/cves/2.0"
+    format: "json"
+    auth_type: "api_key_header"
+    auth_header: "apiKey"
+    api_key_env: "NVD_API_KEY"
+    rate_limit_per_second: 0.16
+    output_subdir: "nvd"
+    paginated: true
+    page_size: 2000
+
+  cisa_kev:
+    enabled: true
+    name: "CISA KEV"
+    description: "Known Exploited Vulnerabilities Catalog"
+    url: "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+    format: "json"
+    auth_type: "none"
+    rate_limit_per_second: 1
+    output_subdir: "cisa-kev"
+    output_filename: "known_exploited_vulnerabilities.json"
+
+  cwe:
+    enabled: true
+    name: "CWE"
+    description: "Common Weakness Enumeration"
+    url: "https://cwe-api.mitre.org/api/v1/"
+    format: "json"
+    auth_type: "none"
+    rate_limit_per_second: 2
+    output_subdir: "cwe"
+
+  epss:
+    enabled: true
+    name: "EPSS"
+    description: "Exploit Prediction Scoring System"
+    url: "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
+    format: "csv.gz"
+    auth_type: "none"
+    rate_limit_per_second: 1
+    output_subdir: "epss"
+    output_filename: "epss_scores.csv.gz"
+
+  github_advisory:
+    enabled: true
+    name: "GitHub Advisory"
+    description: "GitHub Security Advisory Database"
+    url: "https://api.github.com/advisories"
+    format: "json"
+    auth_type: "bearer_token"
+    api_key_env: "GITHUB_TOKEN"
+    rate_limit_per_second: 1
+    output_subdir: "github-advisory"
+    paginated: true
+    page_size: 100
+
+  osv:
+    enabled: true
+    name: "OSV.dev"
+    description: "OpenSSF Open Source Vulnerability Database"
+    ecosystems_url: "https://osv-vulnerabilities.storage.googleapis.com/ecosystems.txt"
+    base_url: "https://osv-vulnerabilities.storage.googleapis.com"
+    format: "zip"
+    auth_type: "none"
+    rate_limit_per_second: 2
+    output_subdir: "osv"
+    ecosystems:
+      - "Go"
+      - "npm"
+      - "PyPI"
+      - "Maven"
+      - "NuGet"
+      - "crates.io"
+      - "RubyGems"
+      - "Packagist"
+
+  exploitdb:
+    enabled: true
+    name: "Exploit-DB"
+    description: "Public Exploits Database"
+    url: "https://lucacapacci.github.io/exploitdb/exploits.csv"
+    format: "csv"
+    auth_type: "none"
+    rate_limit_per_second: 1
+    output_subdir: "exploitdb"
+    output_filename: "exploits.csv"
+
+  mitre_attack:
+    enabled: true
+    name: "MITRE ATT&CK"
+    description: "Adversary Tactics, Techniques, and Procedures"
+    urls:
+      - "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json"
+      - "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/mobile-attack/mobile-attack.json"
+      - "https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/ics-attack/ics-attack.json"
+    format: "json"
+    auth_type: "none"
+    rate_limit_per_second: 2
+    output_subdir: "mitre-attack"
+
+  capec:
+    enabled: true
+    name: "CAPEC"
+    description: "Common Attack Pattern Enumeration and Classification"
+    url: "https://capec.mitre.org/data/xml/capec_latest.xml"
+    format: "xml"
+    auth_type: "none"
+    rate_limit_per_second: 1
+    output_subdir: "capec"
+    output_filename: "capec_latest.xml"
+
+  nuclei_templates:
+    enabled: true
+    name: "Nuclei Templates"
+    description: "ProjectDiscovery Vulnerability Detection Templates"
+    url: "https://github.com/projectdiscovery/nuclei-templates/archive/refs/heads/main.zip"
+    format: "zip"
+    auth_type: "none"
+    rate_limit_per_second: 1
+    output_subdir: "nuclei-templates"
+    output_filename: "nuclei-templates.zip"
+
+  seclists:
+    enabled: false
+    name: "SecLists"
+    description: "Security Assessment Wordlists and Payloads"
+    url: "https://github.com/danielmiessler/SecLists/archive/master.zip"
+    format: "zip"
+    auth_type: "none"
+    rate_limit_per_second: 1
+    output_subdir: "seclists"
+    output_filename: "seclists.zip"
+
+  vulners:
+    enabled: false
+    name: "Vulners"
+    description: "Aggregated Vulnerability Intelligence"
+    url: "https://vulners.com/api/v4/archive/collection"
+    format: "json"
+    auth_type: "api_key_header"
+    auth_header: "X-Api-Key"
+    api_key_env: "VULNERS_API_KEY"
+    rate_limit_per_second: 1
+    output_subdir: "vulners"
