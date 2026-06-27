@@ -11,26 +11,25 @@ type StartAuditInput struct {
 }
 
 type StartAuditOutput struct {
-	SessionID  string         `json:"session_id"`
-	TotalRules int            `json:"total_rules"`
-	Categories map[string]int `json:"categories"`
-	Message    string         `json:"message"`
+	SessionID  string `json:"session_id"`
+	TotalRules int    `json:"total_rules"`
+	RulesURL   string `json:"rules_url"`
+	ResultsURL string `json:"results_url"`
+	Message    string `json:"message"`
 }
 
 type GetRulesInput struct {
 	SessionID string `json:"session_id" jsonschema:"Session ID from start_audit"`
-	BatchSize int    `json:"batch_size,omitempty" jsonschema:"Number of rules to return (default 5, max 20)"`
+	BatchSize int    `json:"batch_size,omitempty" jsonschema:"Optional limit on rules returned. Default 0 = all rules at once (recommended for token efficiency). Set to a positive number only for very large audits."`
 }
 
 type RuleForAgent struct {
-	ID               string   `json:"id"`
-	Source           string   `json:"source"`
-	Category         string   `json:"category"`
-	Severity         string   `json:"severity"`
-	Title            string   `json:"title"`
-	CheckInstruction string   `json:"check_instruction"`
-	Remediation      string   `json:"remediation,omitempty"`
-	References       []string `json:"references,omitempty"`
+	ID               string `json:"id"`
+	Source           string `json:"source"`
+	Category         string `json:"category"`
+	Severity         string `json:"severity"`
+	Title            string `json:"title"`
+	CheckInstruction string `json:"check_instruction"`
 }
 
 type GetRulesOutput struct {

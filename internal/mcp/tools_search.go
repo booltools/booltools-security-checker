@@ -36,8 +36,6 @@ func (t *SearchTools) SearchRules(ctx context.Context, input SearchRulesInput) (
 			Severity:         rule.Severity,
 			Title:            rule.Title,
 			CheckInstruction: rule.CheckInstruction,
-			Remediation:      rule.Remediation,
-			References:       rule.References,
 		})
 	}
 

@@ -40,7 +40,7 @@ func main() {
 		cancel()
 	}()
 
-	server, err := secmcp.NewSecurityCheckerServer(*dbPath, logger)
+	server, err := secmcp.NewSecurityCheckerServer(*dbPath, *port, logger)
 	if err != nil {
 		logger.Error("failed to create MCP server", "error", err)
 		os.Exit(1)
@@ -51,6 +51,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("/mcp", httpHandler)
+	mux.HandleFunc("/audit/", server.RouteAuditHTTP)
 
 	httpServer := &http.Server{
 		Addr:              ":" + *port,

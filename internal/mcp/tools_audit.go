@@ -10,12 +10,14 @@ import (
 type AuditTools struct {
 	database       *RulesDatabase
 	sessionManager *SessionManager
+	serverPort     string
 }
 
-func NewAuditTools(database *RulesDatabase, sessionManager *SessionManager) *AuditTools {
+func NewAuditTools(database *RulesDatabase, sessionManager *SessionManager, serverPort string) *AuditTools {
 	return &AuditTools{
 		database:       database,
 		sessionManager: sessionManager,
+		serverPort:     serverPort,
 	}
 }
 
@@ -80,28 +82,30 @@ func (t *AuditTools) StartAudit(ctx context.Context, input StartAuditInput) (Sta
 
 	if totalRules == 0 {
 		return StartAuditOutput{
-			Categories: make(map[string]int),
-			Message:    "No rules found matching the specified criteria. Try broadening your filters.",
+			Message: "No rules found matching the specified criteria. Try broadening your filters.",
 		}, nil
-	}
-
-	categories, err := t.database.GetCategoryCounts(filter)
-	if err != nil || categories == nil {
-		categories = make(map[string]int)
 	}
 
 	session := t.sessionManager.CreateSession(filter, totalRules)
 
+	rulesURL := fmt.Sprintf("http://localhost:%s/audit/%s/rules.json", t.serverPort, session.ID)
+	resultsURL := fmt.Sprintf("http://localhost:%s/audit/%s/results", t.serverPort, session.ID)
+
 	return StartAuditOutput{
 		SessionID:  session.ID,
 		TotalRules: totalRules,
-		Categories: categories,
+		RulesURL:   rulesURL,
+		ResultsURL: resultsURL,
 		Message: fmt.Sprintf(
-			"Audit session created with %d security rules to check. "+
-				"MANDATORY: You must call get_rules repeatedly and check EVERY rule individually against the codebase. "+
-				"Report results for each batch before requesting the next. Do NOT skip any rules. "+
-				"The audit is only complete when all %d rules have been checked.",
-			totalRules, totalRules),
+			"%d security rules to check. "+
+				"INSTRUCTIONS: "+
+				"1) Download rules: curl %s -o tmp/audit_rules.json "+
+				"2) Read the file from top to bottom. For EACH rule, read its check_instruction and verify if the codebase satisfies it. "+
+				"DO NOT analyze, aggregate, count, or categorize the rules. Just check them one by one sequentially. "+
+				"3) For each rule write a result: {rule_id, status (pass/fail/skipped), evidence}. Save all results to tmp/audit_results.json. "+
+				"4) POST results: curl -X POST %s -H 'Content-Type: application/json' -d @tmp/audit_results.json "+
+				"5) Call get_report for the final summary.",
+			totalRules, rulesURL, resultsURL),
 	}, nil
 }
 
@@ -111,17 +115,12 @@ func (t *AuditTools) GetRules(ctx context.Context, input GetRulesInput) (GetRule
 		return GetRulesOutput{}, err
 	}
 
-	batchSize := input.BatchSize
-	if batchSize <= 0 {
-		batchSize = 5
-	}
-	if batchSize > 20 {
-		batchSize = 20
-	}
-
 	filter := session.Filter
-	filter.Limit = batchSize
 	filter.Offset = session.CurrentIndex
+
+	if input.BatchSize > 0 {
+		filter.Limit = input.BatchSize
+	}
 
 	rules, err := t.database.QueryRules(filter)
 	if err != nil {
@@ -137,8 +136,6 @@ func (t *AuditTools) GetRules(ctx context.Context, input GetRulesInput) (GetRule
 			Severity:         rule.Severity,
 			Title:            rule.Title,
 			CheckInstruction: rule.CheckInstruction,
-			Remediation:      rule.Remediation,
-			References:       rule.References,
 		})
 	}
 
@@ -149,23 +146,10 @@ func (t *AuditTools) GetRules(ctx context.Context, input GetRulesInput) (GetRule
 		remaining = 0
 	}
 
-	checked, total := t.sessionManager.GetProgress(input.SessionID)
-
-	var progress string
-	if remaining > 0 {
-		progress = fmt.Sprintf(
-			"%d/%d checked, %d remaining. IMPORTANT: You MUST continue calling get_rules and checking each rule. Do NOT stop until remaining=0.",
-			checked, total, remaining)
-	} else {
-		progress = fmt.Sprintf(
-			"%d/%d checked. All rules served. Report results for this final batch, then call get_report.",
-			checked, total)
-	}
-
 	return GetRulesOutput{
 		Rules:     agentRules,
 		Remaining: remaining,
-		Progress:  progress,
+		Progress:  fmt.Sprintf("%d rules delivered, %d remaining", len(rules), remaining),
 	}, nil
 }
 
@@ -176,17 +160,11 @@ func (t *AuditTools) ReportResults(ctx context.Context, input ReportResultsInput
 	}
 
 	checked, total := t.sessionManager.GetProgress(input.SessionID)
-	percentage := float64(checked) / float64(total) * 100
 
-	var progress string
-	if checked < total {
-		progress = fmt.Sprintf(
-			"%d/%d rules checked (%.0f%%). Continue: call get_rules for the next batch. %d rules remaining.",
-			checked, total, percentage, total-checked)
-	} else {
-		progress = fmt.Sprintf(
-			"%d/%d rules checked (100%%). Audit complete! Call get_report to see the final summary.",
-			checked, total)
+	progress := fmt.Sprintf("%d/%d rules checked (%.0f%%)",
+		checked, total, float64(checked)/float64(total)*100)
+	if checked >= total {
+		progress += ". Audit complete — call get_report for the final summary."
 	}
 
 	return ReportResultsOutput{

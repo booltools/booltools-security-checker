@@ -12,10 +12,10 @@ build-mcp:
 build-all: build build-mcp
 
 run: build
-	./bin/$(BINARY_NAME)
+	bin\$(BINARY_NAME).exe
 
 dev:
-	go run ./cmd/server
+	go build -o bin/$(BINARY_NAME).exe ./cmd/server && bin\$(BINARY_NAME).exe
 
 test:
 	go test ./... -v -count=1
@@ -33,16 +33,16 @@ web-build:
 	cd web && npm run build
 
 normalize:
-	go run ./cmd/normalize
+	go build -o bin/normalize.exe ./cmd/normalize && bin\normalize.exe
 
 crawl:
-	go run ./cmd/crawler
+	go build -o bin/crawler.exe ./cmd/crawler && bin\crawler.exe
 
 deduplicate:
-	go run ./cmd/deduplicate
+	go build -o bin/deduplicate.exe ./cmd/deduplicate && bin\deduplicate.exe
 
 dbstats:
-	go run ./cmd/dbstats
+	go build -o bin/dbstats.exe ./cmd/dbstats && bin\dbstats.exe
 
 clean:
 	go clean

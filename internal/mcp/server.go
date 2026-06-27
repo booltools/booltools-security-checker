@@ -18,14 +18,14 @@ type SecurityCheckerServer struct {
 	logger         *slog.Logger
 }
 
-func NewSecurityCheckerServer(dbPath string, logger *slog.Logger) (*SecurityCheckerServer, error) {
+func NewSecurityCheckerServer(dbPath string, port string, logger *slog.Logger) (*SecurityCheckerServer, error) {
 	database, err := NewRulesDatabase(dbPath, logger)
 	if err != nil {
 		return nil, fmt.Errorf("opening database: %w", err)
 	}
 
 	sessionManager := NewSessionManager()
-	auditTools := NewAuditTools(database, sessionManager)
+	auditTools := NewAuditTools(database, sessionManager, port)
 	searchTools := NewSearchTools(database)
 
 	mcpServer := gomcp.NewServer(
@@ -71,49 +71,47 @@ func (s *SecurityCheckerServer) registerTools() {
 - language: the primary language (go, python, javascript, java, etc.)
 - tools: array of ALL libraries/tools/runtimes the project uses (e.g. ["react", "express", "postgres", "redis", "docker", "nginx"]). Look at package.json, go.mod, requirements.txt, etc. to find these.
 - platform: cloud/infra if applicable (aws, gcp, azure, docker, kubernetes)
-- audit_type: one of:
-  "code" (default, ~875 rules) — application-level attack patterns (CAPEC), code weaknesses (CWE), and code-relevant MITRE techniques. Best for checking source code of web apps, APIs, and services.
-  "infrastructure" (~2200 rules) — OS-level, cloud, and network attack techniques (MITRE ATT&CK + CISA KEV). Best for checking server configs, Docker, K8s, cloud IAM.
-  "extended" (~8300 rules) — code patterns + nuclei product-specific templates.
-  "full" (~25000 rules) — all non-dependency rules.
-  "dependency" — checks vulnerable package versions only.
-  "all" — everything.
+- audit_type: "code" (default ~875 rules), "infrastructure" (~2200), "extended" (~8300), "full" (~25000), "dependency", "all"
 
-IMPORTANT: After starting an audit, you MUST iterate through ALL rules using get_rules and report_results until every single rule has been checked. Do NOT skip rules or stop early. The audit is only complete when all rules have been reported.`,
+WORKFLOW after calling start_audit:
+1. Download rules file: curl <rules_url> -o tmp/audit_rules.json
+2. Read the file from top to bottom. For EACH rule, read its check_instruction field and verify if the codebase satisfies it.
+3. DO NOT analyze, count, aggregate, or categorize the rules. Just verify each one sequentially against the code.
+4. For each rule, record: {rule_id, status: "pass"|"fail"|"skipped", evidence: "why"}. Save to tmp/audit_results.json.
+5. Upload results: curl -X POST <results_url> -H "Content-Type: application/json" -d @tmp/audit_results.json
+6. Call get_report for the summary.`,
 	}, s.handleStartAudit)
 
 	gomcp.AddTool(s.mcpServer, &gomcp.Tool{
 		Name: "get_rules",
-		Description: `Get the next batch of security rules to check. Each rule includes a check_instruction that tells you exactly what to verify in the codebase.
+		Description: `Download security rules for the audit session. By default returns ALL rules at once.
+Use batch_size parameter only for very large audits (>1000 rules).
 
-MANDATORY WORKFLOW: You MUST keep calling get_rules until remaining=0. For EACH rule returned, you MUST check the codebase following the check_instruction and then report the result via report_results. Do NOT skip any rules. Do NOT summarize or batch-skip rules. Every rule deserves individual verification.`,
+PREFERRED: Use the rules_url from start_audit to download rules as a file instead.
+The file approach keeps rules out of your context window, saving significant tokens.`,
 	}, s.handleGetRules)
 
 	gomcp.AddTool(s.mcpServer, &gomcp.Tool{
 		Name: "report_results",
-		Description: `Report the results of checking security rules. For each rule, report pass, fail, or skipped with evidence.
+		Description: `Submit audit results. For each rule, report: pass, fail, or skipped with evidence.
+You can submit ALL results in a single call.
 
-RULES:
-- You MUST report results for EVERY rule received from get_rules
-- Status "skipped" should ONLY be used when the rule is genuinely not applicable (e.g., a Docker rule for a project without Docker)
-- You MUST provide evidence for "fail" results explaining what was found
-- You MUST provide evidence for "skipped" results explaining why it was skipped
-- Do NOT batch-skip rules to finish faster`,
+ALTERNATIVE: POST a JSON array of results to the results_url from start_audit.`,
 	}, s.handleReportResults)
 
 	gomcp.AddTool(s.mcpServer, &gomcp.Tool{
-		Name: "get_report",
-		Description: `Get the final security audit report. This tool will REFUSE to generate a report unless ALL rules have been checked. You must complete the full audit loop (get_rules → check → report_results) for every rule before calling this.`,
+		Name:        "get_report",
+		Description: "Get the final security audit report with score, pass/fail counts, and failed rule details. Requires at least 80% of rules to be checked.",
 	}, s.handleGetReport)
 
 	gomcp.AddTool(s.mcpServer, &gomcp.Tool{
 		Name:        "search_rules",
-		Description: "Search security rules by keyword, CVE ID, CWE ID, or description. Useful for investigating specific vulnerabilities.",
+		Description: "Search security rules by keyword, CVE ID, CWE ID, or description.",
 	}, s.handleSearchRules)
 
 	gomcp.AddTool(s.mcpServer, &gomcp.Tool{
 		Name:        "get_rule_detail",
-		Description: "Get full details of a specific security rule including description, references, CVSS score, and all metadata.",
+		Description: "Get full details of a rule (description, remediation, references, CVSS). Use after a rule fails to get fix guidance.",
 	}, s.handleGetRuleDetail)
 }
 

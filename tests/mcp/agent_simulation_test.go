@@ -46,7 +46,7 @@ func TestAgentSimulation_FullSecurityAudit(t *testing.T) {
 	}
 	t.Logf("Session: %s", startOutput.SessionID)
 	t.Logf("Total rules to check: %d", startOutput.TotalRules)
-	t.Logf("Categories: %v", startOutput.Categories)
+	t.Logf("Rules URL: %s", startOutput.RulesURL)
 
 	// Step 2: Agent gets a batch of rules
 	t.Log("\n--- Step 2: Getting rules to check ---")

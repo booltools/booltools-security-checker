@@ -43,7 +43,7 @@ func setupTestServer(t *testing.T) (*secmcp.RulesDatabase, *secmcp.SessionManage
 	t.Cleanup(func() { database.Close() })
 
 	sessionManager := secmcp.NewSessionManager()
-	auditTools := secmcp.NewAuditTools(database, sessionManager)
+	auditTools := secmcp.NewAuditTools(database, sessionManager, "8788")
 	searchTools := secmcp.NewSearchTools(database)
 
 	return database, sessionManager, auditTools, searchTools
@@ -67,12 +67,11 @@ func TestStartAudit_Go_Critical(t *testing.T) {
 	if output.TotalRules == 0 {
 		t.Fatal("expected at least some critical rules for Go")
 	}
-	if output.Categories == nil || len(output.Categories) == 0 {
-		t.Fatal("expected non-empty categories")
+	if output.RulesURL == "" {
+		t.Fatal("expected non-empty rules_url")
 	}
 
-	t.Logf("Audit started: session=%s, total_rules=%d", output.SessionID, output.TotalRules)
-	t.Logf("Categories: %v", output.Categories)
+	t.Logf("Audit started: session=%s, total_rules=%d, rules_url=%s", output.SessionID, output.TotalRules, output.RulesURL)
 }
 
 func TestStartAudit_Python_High(t *testing.T) {

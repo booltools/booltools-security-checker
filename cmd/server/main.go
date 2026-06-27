@@ -29,7 +29,7 @@ func main() {
 	defer database.Close()
 
 	sessionManager := secmcp.NewSessionManager()
-	auditTools := secmcp.NewAuditTools(database, sessionManager)
+	auditTools := secmcp.NewAuditTools(database, sessionManager, "8788")
 	searchTools := secmcp.NewSearchTools(database)
 
 	router := api.NewRouter(auditTools, searchTools, sessionManager)
