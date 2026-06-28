@@ -23,7 +23,7 @@ Open-source security validation checker that audits any repository or cloud arch
 ### Prerequisites
 
 - Go 1.21+
-- Node.js 20+
+- Node.js 22+
 
 ### Install
 
@@ -118,10 +118,61 @@ curl -X POST http://localhost:8787/api/audit \
 The MCP server lets AI agents programmatically audit code:
 
 ```bash
-go run ./cmd/mcp-server
+# Build and run
+go build -o mcp-server ./cmd/mcp-server
+./mcp-server
+# Runs on http://localhost:8788/mcp
 ```
 
 Available tools: `start_audit`, `get_rules`, `report_results`, `get_report`, `search_rules`, `get_rule_detail`
+
+### Cursor IDE
+
+Add to `.cursor/mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "booltoolsSecurityChecker": {
+      "url": "http://localhost:8788/mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "security-checker": {
+      "command": "path/to/mcp-server",
+      "args": ["-db", "path/to/security_rules.db"]
+    }
+  }
+}
+```
+
+### Windsurf / Cline / Other MCP Clients
+
+Use the HTTP endpoint directly:
+
+```
+URL: http://localhost:8788/mcp
+Transport: Streamable HTTP (SSE)
+```
+
+### Agent Workflow
+
+Once connected, the agent should:
+
+1. Call `start_audit` with language, tools, platform, and audit_type
+2. Download rules from the returned `rules_url` to a local file
+3. Read each rule's `check_instruction` and verify against the codebase
+4. POST results to the returned `results_url`
+5. Call `get_report` for the final summary
 
 ## CLI Flags
 

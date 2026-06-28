@@ -37,3 +37,4 @@ vendor/
 
 # Test output
 tmp/
+node_modules/
