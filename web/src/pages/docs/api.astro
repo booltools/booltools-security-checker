@@ -27,26 +27,23 @@ import Layout from '../../layouts/Layout.astro';
     </table>
 
     <h2>Start an Audit</h2>
-    <pre><code>curl -X POST http://localhost:8787/api/audit \
-  -H "Content-Type: application/json" \
+    <pre><code set:text={`curl -X POST http://localhost:8787/api/audit \\
+  -H "Content-Type: application/json" \\
   -d '{
     "folder_path": "/path/to/project",
     "language": "go",
     "platform": "docker",
     "min_severity": "high"
-  }'</code></pre>
+  }'`} /></pre>
 
     <h3>Response</h3>
-    <pre><code>{
+    <pre><code set:text={`{
   "session_id": "abc123...",
-  "total_rules": 918,
-  "categories": {
-    "remote_code_execution": 40,
-    "privilege_escalation": 101,
-    "authentication_failure": 77
-  },
-  "message": "Audit session created with 918 security rules to check."
-}</code></pre>
+  "total_rules": 875,
+  "rules_url": "http://localhost:8788/audit/abc123/rules.json",
+  "results_url": "http://localhost:8788/audit/abc123/results",
+  "message": "875 security rules to check..."
+}`} /></pre>
 
     <h2>Get Report</h2>
     <pre><code>curl http://localhost:8787/api/report/abc123</code></pre>
