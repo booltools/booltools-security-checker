@@ -1,4 +1,4 @@
-.PHONY: build build-mcp build-all run dev test clean lint tidy web-dev web-build normalize crawl deduplicate dbstats
+.PHONY: build build-mcp build-all run dev dev-mcp test clean lint tidy web-dev web-build normalize crawl deduplicate dbstats
 
 BINARY_NAME=booltools-security-checker
 MCP_BINARY=security-checker-mcp
@@ -15,7 +15,10 @@ run: build
 	bin\$(BINARY_NAME).exe
 
 dev:
-	go build -o bin/$(BINARY_NAME).exe ./cmd/server && bin\$(BINARY_NAME).exe
+	go run ./cmd/server
+
+dev-mcp:
+	go run ./cmd/server -mcp
 
 test:
 	go test ./... -v -count=1
@@ -33,16 +36,16 @@ web-build:
 	cd web && npm run build
 
 normalize:
-	go build -o bin/normalize.exe ./cmd/normalize && bin\normalize.exe
+	go run ./cmd/normalize
 
 crawl:
-	go build -o bin/crawler.exe ./cmd/crawler && bin\crawler.exe
+	go run ./cmd/crawler
 
 deduplicate:
-	go build -o bin/deduplicate.exe ./cmd/deduplicate && bin\deduplicate.exe
+	go run ./cmd/deduplicate
 
 dbstats:
-	go build -o bin/dbstats.exe ./cmd/dbstats && bin\dbstats.exe
+	go run ./cmd/dbstats
 
 clean:
 	go clean

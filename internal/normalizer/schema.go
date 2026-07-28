@@ -81,6 +81,11 @@ const (
 	CategoryDenialOfService      = "denial_of_service"
 	CategoryPrivilegeEscalation  = "privilege_escalation"
 	CategoryRemoteCodeExecution  = "remote_code_execution"
+	CategoryHardcodedSecrets     = "hardcoded_secrets"
+	CategoryContainerSecurity    = "container_security"
+	CategoryIaCMisconfiguration  = "iac_misconfiguration"
+	CategoryInsecureCookie       = "insecure_cookie"
+	CategoryInsecureCrypto       = "insecure_crypto"
 	CategoryOther                = "other"
 )
 
@@ -103,4 +108,8 @@ const (
 	SourceNuclei         = "nuclei"
 	SourceGitHubAdvisory = "github_advisory"
 	SourceOSV            = "osv"
+	SourceSecrets        = "secrets"
+	SourceIaC            = "iac"
+	SourceContainer      = "container"
+	SourceSASTPatterns   = "sast_patterns"
 )

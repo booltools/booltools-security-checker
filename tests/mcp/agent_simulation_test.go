@@ -154,8 +154,34 @@ func TestAgentSimulation_FullSecurityAudit(t *testing.T) {
 		})
 	}
 
-	// Step 6: Get final report
-	t.Log("\n--- Step 6: Final audit report ---")
+	// Step 6: Complete remaining rules to reach report threshold
+	t.Log("\n--- Step 6: Completing remaining rules check ---")
+	for {
+		remainingRules, err := auditTools.GetRules(ctx, secmcp.GetRulesInput{
+			SessionID: startOutput.SessionID,
+			BatchSize: 50,
+		})
+		if err != nil || len(remainingRules.Rules) == 0 {
+			break
+		}
+		var batchResults []secmcp.RuleResult
+		for _, rule := range remainingRules.Rules {
+			finding := agentCheckRule(t, rule, repoFiles)
+			findings = append(findings, finding)
+			batchResults = append(batchResults, secmcp.RuleResult{
+				RuleID:   rule.ID,
+				Status:   finding.Status,
+				Evidence: finding.Evidence,
+			})
+		}
+		_, _ = auditTools.ReportResults(ctx, secmcp.ReportResultsInput{
+			SessionID: startOutput.SessionID,
+			Results:   batchResults,
+		})
+	}
+
+	// Step 7: Get final report
+	t.Log("\n--- Step 7: Final audit report ---")
 	finalReport, err := auditTools.GetReport(ctx, secmcp.GetReportInput{
 		SessionID: startOutput.SessionID,
 	})
@@ -168,7 +194,7 @@ func TestAgentSimulation_FullSecurityAudit(t *testing.T) {
 	t.Logf("Passed: %d | Failed: %d | Skipped: %d", finalReport.Passed, finalReport.Failed, finalReport.Skipped)
 
 	// Step 7: Print all findings summary
-	t.Log("\n--- Step 7: Findings Summary ---")
+	t.Log("\n--- Step 8: Findings Summary ---")
 	failCount := 0
 	for _, finding := range findings {
 		if finding.Status == "fail" {

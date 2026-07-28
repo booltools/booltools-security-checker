@@ -111,6 +111,30 @@ func GenerateOSVCheckInstruction(osvID string, summary string, ecosystem string,
 	return instruction
 }
 
+func GenerateSecretsCheckInstruction(title string, pattern string, description string) string {
+	instruction := "Search the entire codebase (including configuration files, environment examples, and test files) for " + title + ". "
+	instruction += "Look for patterns matching: " + pattern + ". "
+	instruction += description + " "
+	instruction += "Check .env.example, docker-compose files, CI configs, and source code. If found, flag as a critical security issue requiring immediate rotation of the exposed credential."
+	return instruction
+}
+
+func GenerateIaCCheckInstruction(title string, checkTarget string, description string) string {
+	instruction := "Inspect all Infrastructure as Code files (Terraform .tf, CloudFormation .yaml/.json, Kubernetes manifests, Pulumi code) for: " + title + ". "
+	instruction += "Specifically look in: " + checkTarget + ". "
+	instruction += description + " "
+	instruction += "If the misconfiguration is found, flag it and recommend the secure alternative."
+	return instruction
+}
+
+func GenerateContainerCheckInstruction(title string, checkTarget string, description string) string {
+	instruction := "Inspect all Dockerfiles, Containerfiles, and docker-compose files in the project for: " + title + ". "
+	instruction += "Specifically check: " + checkTarget + ". "
+	instruction += description + " "
+	instruction += "If found, flag it and recommend the secure configuration."
+	return instruction
+}
+
 func truncateDescription(description string, maxLength int) string {
 	if len(description) <= maxLength {
 		return description

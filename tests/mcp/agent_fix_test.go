@@ -127,6 +127,29 @@ func TestAgentSimulation_DockerSecurityAudit(t *testing.T) {
 		}
 	}
 
+	// Complete remaining rules to reach report threshold
+	for {
+		remaining, err := auditTools.GetRules(ctx, secmcp.GetRulesInput{
+			SessionID: startOutput.SessionID,
+			BatchSize: 50,
+		})
+		if err != nil || len(remaining.Rules) == 0 {
+			break
+		}
+		var batchResults []secmcp.RuleResult
+		for _, rule := range remaining.Rules {
+			batchResults = append(batchResults, secmcp.RuleResult{
+				RuleID:   rule.ID,
+				Status:   "pass",
+				Evidence: "Not applicable to this Dockerfile",
+			})
+		}
+		_, _ = auditTools.ReportResults(ctx, secmcp.ReportResultsInput{
+			SessionID: startOutput.SessionID,
+			Results:   batchResults,
+		})
+	}
+
 	report, err := auditTools.GetReport(ctx, secmcp.GetReportInput{
 		SessionID: startOutput.SessionID,
 	})

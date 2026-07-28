@@ -258,6 +258,30 @@ func TestAgentTrace_FullAuditWithIO(t *testing.T) {
 	}
 	t.Logf("[report_results] progress=%s", reportOutput2.Progress)
 
+	// === Complete remaining rules to reach 80% threshold ===
+	for {
+		remaining, err := auditTools.GetRules(ctx, secmcp.GetRulesInput{
+			SessionID: sessionID,
+			BatchSize: 50,
+		})
+		if err != nil || len(remaining.Rules) == 0 {
+			break
+		}
+		var batchResults []secmcp.RuleResult
+		for _, rule := range remaining.Rules {
+			finding := agentCheckRule(t, rule, repoFiles)
+			batchResults = append(batchResults, secmcp.RuleResult{
+				RuleID:   rule.ID,
+				Status:   finding.Status,
+				Evidence: finding.Evidence,
+			})
+		}
+		_, _ = auditTools.ReportResults(ctx, secmcp.ReportResultsInput{
+			SessionID: sessionID,
+			Results:   batchResults,
+		})
+	}
+
 	// === Call 13: get_report (final) ===
 	getReportInput := secmcp.GetReportInput{
 		SessionID: sessionID,

@@ -36,13 +36,19 @@ func (t *AuditTools) StartAudit(ctx context.Context, input StartAuditInput) (Sta
 	case "extended":
 		// Code patterns + nuclei product-specific templates
 		filter.ExcludeCategories = []string{"supply_chain"}
-		filter.Sources = []string{"cwe", "capec", "mitre_attack", "nuclei"}
+		filter.Sources = []string{"cwe", "capec", "mitre_attack", "nuclei", "sast_patterns"}
 	case "infrastructure":
-		// All MITRE techniques + CISA KEV (OS-level, cloud, infra attacks)
+		// All MITRE techniques + CISA KEV (OS-level, cloud, infra attacks) + IaC + Containers
 		filter.ExcludeCategories = []string{"supply_chain"}
-		filter.Sources = []string{"mitre_attack", "cisa_kev"}
+		filter.Sources = []string{"mitre_attack", "cisa_kev", "iac", "container"}
+	case "secrets":
+		// Only hardcoded credentials/secrets detection
+		filter.Sources = []string{"secrets"}
+	case "iac":
+		// Only Infrastructure as Code + container misconfigurations
+		filter.Sources = []string{"iac", "container"}
 	case "full":
-		// All code-level rules (includes exploitdb, nvd, nuclei)
+		// All code-level rules (includes exploitdb, nvd, nuclei, sast_patterns, secrets)
 		filter.ExcludeCategories = []string{"supply_chain"}
 	case "all":
 		// Everything including supply_chain
@@ -51,10 +57,12 @@ func (t *AuditTools) StartAudit(ctx context.Context, input StartAuditInput) (Sta
 		// - ALL CAPEC rules (application-level attack patterns: SQL injection, XSS, CSRF, etc.)
 		// - ALL CWE rules (code weaknesses: buffer overflow, improper validation, etc.)
 		// - Only code-relevant MITRE techniques (credential access, auth, injection, info exposure)
+		// - SAST patterns (language-specific curated rules like Snyk/Aikido)
+		// - Secrets detection (hardcoded credentials)
 		// Excludes: OS-level MITRE ("other" category: Rundll32, VNC, Screen Capture, etc.)
 		// Excludes: product-specific CISA KEV (Cisco, Ubiquiti, Oracle CVEs)
 		filter.ExcludeCategories = []string{"supply_chain"}
-		filter.Sources = []string{"cwe", "capec", "mitre_attack"}
+		filter.Sources = []string{"cwe", "capec", "mitre_attack", "sast_patterns", "secrets"}
 		filter.ExcludeSourceCategories = map[string][]string{
 			"mitre_attack": {"other"},
 		}

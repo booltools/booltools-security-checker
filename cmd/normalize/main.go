@@ -68,6 +68,10 @@ func main() {
 	norm.RegisterParser(normalizer.NewNucleiParser(*dataDir))
 	norm.RegisterParser(normalizer.NewGitHubAdvisoryParser(*dataDir))
 	norm.RegisterParser(normalizer.NewOSVParser(*dataDir))
+	norm.RegisterParser(normalizer.NewSecretsParser())
+	norm.RegisterParser(normalizer.NewIaCParser())
+	norm.RegisterParser(normalizer.NewContainerParser())
+	norm.RegisterParser(normalizer.NewSASTPatternParser())
 
 	startTime := time.Now()
 	logger.Info("starting normalization pipeline", "data_dir", *dataDir, "output", dbPath)
